@@ -11,6 +11,9 @@
   background-color: #cccccc;
   border: 1px solid #999999;
 }
+.todo-item--deleted {
+  background-color: red;
+}
 h2 {
   margin: 5px;
 }

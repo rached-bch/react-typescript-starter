@@ -15,7 +15,21 @@ class TodoListComponent extends Component<{}, TodoListInterface> {
       error: false
     };
   }
+  deleteTodo = (index: number) => {
+    const todoList = this.state.todoList;
+    todoList.map((item: Todo, i: number) => {
+      if (index === i) {
+        todoList[index] = { title: item.title, deleted: true };
+        this.setState({
+          todoList: todoList
+        });
+      }
+    });
+  };
 
+  // deleteTodo = (event: any) => {
+  //   console.log("test", event);
+  // };
   refreshTodoList = () => {
     this.setState({
       loading: true,
@@ -52,8 +66,18 @@ class TodoListComponent extends Component<{}, TodoListInterface> {
         {loading === false && error === false && (
           <div className="todo-list">
             {todoList.map((item, index) => (
-              <div key={index} className="todo-item">
-                <h2>{item.title}</h2>
+              <div
+                key={index}
+                className={
+                  item.deleted ? "todo-item todo-item--deleted" : "todo-item"
+                }
+              >
+                <h2>
+                  {item.title}{" "}
+                  <button onClick={(event: any) => this.deleteTodo(index)}>
+                    x
+                  </button>
+                </h2>
               </div>
             ))}
           </div>
