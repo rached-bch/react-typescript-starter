@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import Todo from "../types/Todo";
 
 interface TodoListInterface {
@@ -7,6 +7,7 @@ interface TodoListInterface {
   error: boolean;
 }
 class TodoListComponent extends Component<{}, TodoListInterface> {
+  inputTodoRef = createRef<HTMLInputElement>();
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -25,6 +26,19 @@ class TodoListComponent extends Component<{}, TodoListInterface> {
         });
       }
     });
+  };
+
+  addTodo = () => {
+    const todoList = this.state.todoList;
+    const title: string = this.inputTodoRef.current?.value
+      ? this.inputTodoRef.current?.value
+      : "";
+    if (title.length > 0) {
+      todoList.push({ title: title, deleted: false });
+      this.setState({
+        todoList: todoList
+      });
+    }
   };
 
   componentDidMount() {
@@ -71,8 +85,12 @@ class TodoListComponent extends Component<{}, TodoListInterface> {
             type="text"
             className="form-control todo-list-input"
             placeholder="What do you need to do today?"
+            ref={this.inputTodoRef}
           />{" "}
-          <button className="add btn btn-primary font-weight-bold todo-list-add-btn">
+          <button
+            onClick={(event: any) => this.addTodo()}
+            className="add btn btn-primary font-weight-bold todo-list-add-btn"
+          >
             Add
           </button>{" "}
         </div>

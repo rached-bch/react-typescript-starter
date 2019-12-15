@@ -478,3 +478,7 @@ input[type="checkbox"] {
   .dropdown-item {
   display: flex !important;
 }
+.todo-list {
+  max-height: 300px;
+  overflow: auto;
+}
