@@ -27,6 +27,10 @@ class TodoListComponent extends Component<{}, TodoListInterface> {
     });
   };
 
+  componentDidMount() {
+    this.refreshTodoList();
+  }
+
   // deleteTodo = (event: any) => {
   //   console.log("test", event);
   // };
@@ -60,29 +64,45 @@ class TodoListComponent extends Component<{}, TodoListInterface> {
     let { todoList, loading, error } = this.state;
     return (
       <div>
-        <h1>Todo list</h1>
+        <h4 className="card-title">Awesome Todo list</h4>
+        <div className="add-items d-flex">
+          {" "}
+          <input
+            type="text"
+            className="form-control todo-list-input"
+            placeholder="What do you need to do today?"
+          />{" "}
+          <button className="add btn btn-primary font-weight-bold todo-list-add-btn">
+            Add
+          </button>{" "}
+        </div>
         {loading && <div className="loading">Loading</div>}
         {error && <div className="error">Error</div>}
         {loading === false && error === false && (
-          <div className="todo-list">
-            {todoList.map((item, index) => (
-              <div
-                key={index}
-                className={
-                  item.deleted ? "todo-item todo-item--deleted" : "todo-item"
+          <div className="list-wrapper">
+            <ul className="d-flex flex-column-reverse todo-list">
+              {todoList.map((item, index) => {
+                if (item.deleted === false) {
+                  return (
+                    <li key={index} className="todo-item">
+                      <div className="form-check">
+                        {" "}
+                        <label className="form-check-label">
+                          {" "}
+                          {item.title} <i className="input-helper"></i>
+                        </label>{" "}
+                      </div>{" "}
+                      <i
+                        className="remove mdi mdi-close-circle-outline"
+                        onClick={(event: any) => this.deleteTodo(index)}
+                      ></i>
+                    </li>
+                  );
                 }
-              >
-                <h2>
-                  {item.title}{" "}
-                  <button onClick={(event: any) => this.deleteTodo(index)}>
-                    x
-                  </button>
-                </h2>
-              </div>
-            ))}
+              })}
+            </ul>
           </div>
         )}
-        <button onClick={this.refreshTodoList}>Refresh</button>
       </div>
     );
   }

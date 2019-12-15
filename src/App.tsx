@@ -1,6 +1,6 @@
 import React from "react";
 import TodoListComponent from "./components/TodoListComponent";
-import "./App.css";
+import "./App.scss";
 
 const App: React.FC = () => {
   return (
