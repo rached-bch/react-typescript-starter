@@ -10,6 +10,7 @@ class TodoListComponent extends Component<{}, TodoList> {
   constructor(props: {}) {
     super(props);
     this.state = todoStore.getState();
+    this.refreshState = this.refreshState.bind(this);
   }
   deleteTodo = (index: number) => {
     TodoActions.deleteTodo(index);
@@ -31,11 +32,16 @@ class TodoListComponent extends Component<{}, TodoList> {
   }
 
   componentWillMount() {
-    todoStore.on("change", () => {
-      this.setState(todoStore.getState());
-    });
+    todoStore.on("change", this.refreshState);
   }
 
+  componentWillUnmount() {
+    todoStore.off("change", this.refreshState);
+  }
+
+  refreshState() {
+    this.setState(todoStore.getState());
+  }
   // deleteTodo = (event: any) => {
   //   console.log("test", event);
   // };
