@@ -2,6 +2,7 @@ import React, { Component, createRef } from "react";
 import Todo from "../types/Todo";
 import TodoList from "../types/TodoList";
 import todoStore from "../stores/TodoStore";
+import Dispatcher from "../dispatcher/Dispatcher";
 
 class TodoListComponent extends Component<{}, TodoList> {
   inputTodoRef = createRef<HTMLInputElement>();
@@ -35,7 +36,8 @@ class TodoListComponent extends Component<{}, TodoList> {
   };
 
   componentDidMount() {
-    todoStore.refreshTodoList();
+    //todoStore.refreshTodoList();
+    Dispatcher.dispatch({ type: "REFRESH_TODO_LIST" });
   }
 
   componentWillMount() {
