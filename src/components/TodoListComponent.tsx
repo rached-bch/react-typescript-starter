@@ -1,20 +1,13 @@
 import React, { Component, createRef } from "react";
 import Todo from "../types/Todo";
+import TodoList from "../types/TodoList";
+import todoStore from "../stores/TodoStore";
 
-interface TodoListInterface {
-  todoList: Array<Todo>;
-  loading: boolean;
-  error: boolean;
-}
-class TodoListComponent extends Component<{}, TodoListInterface> {
+class TodoListComponent extends Component<{}, TodoList> {
   inputTodoRef = createRef<HTMLInputElement>();
   constructor(props: {}) {
     super(props);
-    this.state = {
-      todoList: [{ title: "First todo", deleted: false }],
-      loading: false,
-      error: false
-    };
+    this.state = todoStore.getState();
   }
   deleteTodo = (index: number) => {
     const todoList = this.state.todoList;
@@ -34,7 +27,7 @@ class TodoListComponent extends Component<{}, TodoListInterface> {
       ? this.inputTodoRef.current?.value
       : "";
     if (title.length > 0) {
-      todoList.push({ title: title, deleted: false });
+      todoList.unshift({ title: title, deleted: false });
       this.setState({
         todoList: todoList
       });
@@ -42,38 +35,19 @@ class TodoListComponent extends Component<{}, TodoListInterface> {
   };
 
   componentDidMount() {
-    this.refreshTodoList();
+    todoStore.refreshTodoList();
+  }
+
+  componentWillMount() {
+    todoStore.on("change", () => {
+      this.setState(todoStore.getState());
+    });
   }
 
   // deleteTodo = (event: any) => {
   //   console.log("test", event);
   // };
-  refreshTodoList = () => {
-    this.setState({
-      loading: true,
-      error: false
-    });
-    fetch(`https://jsonplaceholder.typicode.com/todos`)
-      .then(response => response.json())
-      .then(json => {
-        let todoList: Array<Todo> = [];
 
-        json.map((item: any) => {
-          todoList.push({ title: item.title, deleted: false });
-        });
-        this.setState({
-          todoList: todoList,
-          loading: false,
-          error: false
-        });
-      })
-      .catch(reason => {
-        this.setState({
-          loading: false,
-          error: true
-        });
-      });
-  };
   render() {
     let { todoList, loading, error } = this.state;
     return (
