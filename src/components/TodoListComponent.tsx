@@ -3,6 +3,7 @@ import Todo from "../types/Todo";
 import TodoList from "../types/TodoList";
 import todoStore from "../stores/TodoStore";
 import Dispatcher from "../dispatcher/Dispatcher";
+import * as TodoActions from "../actions/TodoActions";
 
 class TodoListComponent extends Component<{}, TodoList> {
   inputTodoRef = createRef<HTMLInputElement>();
@@ -11,33 +12,22 @@ class TodoListComponent extends Component<{}, TodoList> {
     this.state = todoStore.getState();
   }
   deleteTodo = (index: number) => {
-    const todoList = this.state.todoList;
-    todoList.map((item: Todo, i: number) => {
-      if (index === i) {
-        todoList[index] = { title: item.title, deleted: true };
-        this.setState({
-          todoList: todoList
-        });
-      }
-    });
+    TodoActions.deleteTodo(index);
   };
 
   addTodo = () => {
-    const todoList = this.state.todoList;
     const title: string = this.inputTodoRef.current?.value
       ? this.inputTodoRef.current?.value
       : "";
     if (title.length > 0) {
-      todoList.unshift({ title: title, deleted: false });
-      this.setState({
-        todoList: todoList
-      });
+      TodoActions.addTodo({ title });
     }
   };
 
   componentDidMount() {
     //todoStore.refreshTodoList();
-    Dispatcher.dispatch({ type: "REFRESH_TODO_LIST" });
+    //Dispatcher.dispatch({ type: "REFRESH_TODO_LIST" });
+    TodoActions.refreshTodoList();
   }
 
   componentWillMount() {

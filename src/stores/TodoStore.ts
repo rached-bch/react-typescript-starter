@@ -41,11 +41,39 @@ class TodoStore extends EventEmitter {
       });
   }
 
+  addTodo(params: { title: string }) {
+    const title: string =
+      typeof params.title !== "undefined" ? params.title : "";
+    const todoList = this.state.todoList;
+    if (title.length > 0) {
+      todoList.unshift({ title, deleted: false });
+      this.state.todoList = todoList;
+      this.emit("change");
+    }
+  }
+
+  deleteTodo = (index: number) => {
+    const todoList = this.state.todoList;
+    todoList.map((item: Todo, i: number) => {
+      if (index === i) {
+        todoList[index] = { title: item.title, deleted: true };
+      }
+    });
+    this.state.todoList = todoList;
+    this.emit("change");
+  };
+
   handleActions(action: any) {
     console.log("todo handle action : ", action);
     switch (action.type) {
       case "REFRESH_TODO_LIST": {
         this.refreshTodoList();
+      }
+      case "ADD_TODO": {
+        this.addTodo({ title: action.title });
+      }
+      case "DELETE_TODO": {
+        this.deleteTodo(action.index);
       }
     }
   }
