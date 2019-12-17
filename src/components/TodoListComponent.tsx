@@ -1,79 +1,51 @@
 import React, { Component, createRef } from "react";
 import Todo from "../types/Todo";
+import TodoList from "../types/TodoList";
+import todoStore from "../stores/TodoStore";
+import Dispatcher from "../dispatcher/Dispatcher";
+import * as TodoActions from "../actions/TodoActions";
 
-interface TodoListInterface {
-  todoList: Array<Todo>;
-  loading: boolean;
-  error: boolean;
-}
-class TodoListComponent extends Component<{}, TodoListInterface> {
+class TodoListComponent extends Component<{}, TodoList> {
   inputTodoRef = createRef<HTMLInputElement>();
   constructor(props: {}) {
     super(props);
-    this.state = {
-      todoList: [{ title: "First todo", deleted: false }],
-      loading: false,
-      error: false
-    };
+    this.state = todoStore.getState();
+    this.refreshState = this.refreshState.bind(this);
   }
   deleteTodo = (index: number) => {
-    const todoList = this.state.todoList;
-    todoList.map((item: Todo, i: number) => {
-      if (index === i) {
-        todoList[index] = { title: item.title, deleted: true };
-        this.setState({
-          todoList: todoList
-        });
-      }
-    });
+    TodoActions.deleteTodo(index);
   };
 
   addTodo = () => {
-    const todoList = this.state.todoList;
     const title: string = this.inputTodoRef.current?.value
       ? this.inputTodoRef.current?.value
       : "";
     if (title.length > 0) {
-      todoList.push({ title: title, deleted: false });
-      this.setState({
-        todoList: todoList
-      });
+      TodoActions.addTodo({ title });
     }
   };
 
   componentDidMount() {
-    this.refreshTodoList();
+    //todoStore.refreshTodoList();
+    //Dispatcher.dispatch({ type: "REFRESH_TODO_LIST" });
+    TodoActions.refreshTodoList();
   }
 
+  componentWillMount() {
+    todoStore.on("change", this.refreshState);
+  }
+
+  componentWillUnmount() {
+    todoStore.off("change", this.refreshState);
+  }
+
+  refreshState() {
+    this.setState(todoStore.getState());
+  }
   // deleteTodo = (event: any) => {
   //   console.log("test", event);
   // };
-  refreshTodoList = () => {
-    this.setState({
-      loading: true,
-      error: false
-    });
-    fetch(`https://jsonplaceholder.typicode.com/todos`)
-      .then(response => response.json())
-      .then(json => {
-        let todoList: Array<Todo> = [];
 
-        json.map((item: any) => {
-          todoList.push({ title: item.title, deleted: false });
-        });
-        this.setState({
-          todoList: todoList,
-          loading: false,
-          error: false
-        });
-      })
-      .catch(reason => {
-        this.setState({
-          loading: false,
-          error: true
-        });
-      });
-  };
   render() {
     let { todoList, loading, error } = this.state;
     return (
